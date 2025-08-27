@@ -52,6 +52,45 @@ namespace BasketballGame
         public int Defense;
 
         /// <summary>
+        /// Calculates the player's movement speed for in-game sequences.  This
+        /// uses the Dribbling stat as a proxy for agility and quickness.  You
+        /// can adjust the min/max values to tune how stats map to movement.
+        /// </summary>
+        /// <param name="minSpeed">Minimum possible speed when the stat is 0.</param>
+        /// <param name="maxSpeed">Maximum possible speed when the stat is 100.</param>
+        public float GetMovementSpeed(float minSpeed, float maxSpeed)
+        {
+            return Mathf.Lerp(minSpeed, maxSpeed, Dribbling / 100f);
+        }
+
+        /// <summary>
+        /// Determines the speed of the aiming mechanic.  Higher Shooting
+        /// reduces the difficulty by slowing down the moving target or
+        /// expanding the success window.  Adjust the min/max parameters to
+        /// fit your specific aim mini-game implementation.
+        /// </summary>
+        /// <param name="minAimSpeed">Fastest aim speed (worst accuracy).</param>
+        /// <param name="maxAimSpeed">Slowest aim speed (best accuracy).</param>
+        public float GetAimSpeed(float minAimSpeed, float maxAimSpeed)
+        {
+            // Invert interpolation so that higher Shooting yields lower speed
+            return Mathf.Lerp(maxAimSpeed, minAimSpeed, Shooting / 100f);
+        }
+
+        /// <summary>
+        /// Calculates the player's chance to successfully intercept passes or
+        /// react defensively in clutch moments.  This uses the Defense stat
+        /// directly but could combine with Dribbling or Passing for more
+        /// nuanced behaviours.
+        /// </summary>
+        /// <param name="baseChance">Base intercept chance for a stat of 0.</param>
+        /// <param name="maxChance">Maximum intercept chance for a stat of 100.</param>
+        public float GetInterceptChance(float baseChance, float maxChance)
+        {
+            return Mathf.Lerp(baseChance, maxChance, Defense / 100f);
+        }
+
+        /// <summary>
         /// Allocate stat points to a given stat.  This method can be expanded
         /// to include bounds checking, diminishing returns, or costs.
         /// </summary>
@@ -118,10 +157,11 @@ namespace BasketballGame
         public int YearsPro = 0;
 
         /// <summary>
-        /// Current level of the player.  Higher levels typically require
-        /// exponentially more experience.
+        /// Current level of the player.  Players start at level 5 by default
+        /// to reflect their high school skill level.  Higher levels require
+        /// more experience to achieve.
         /// </summary>
-        public int Level = 1;
+        public int Level = 5;
 
         /// <summary>
         /// Experience accumulated towards the next level.
